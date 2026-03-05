@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billions Human vs Robot Game</title>
+<style>
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#0f172a;
+color:white;
+text-align:center;
+margin:0;
+padding:0
+}
+
+h1{margin-top:20px}
+
+#gameInfo{
+margin-top:10px;
+font-size:18px
+}
+
+#grid{
+display:grid;
+grid-template-columns:repeat(4,100px);
+gap:15px;
+justify-content:center;
+margin-top:30px
+}
+
+.box{
+width:100px;
+height:100px;
+background:#1e293b;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:38px;
+cursor:pointer;
+transition:0.2s;
+user-select:none
+}
+
+.box:hover{background:#334155}
+
+#message{
+margin-top:25px;
+font-size:22px
+}
+
+button{
+margin-top:20px;
+padding:10px 20px;
+font-size:16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+background:#2563eb;
+color:white
+}
+
+button:hover{background:#1d4ed8}
+
+.logo{
+width:40px;
+height:40px
+}
+
+@media(max-width:500px){
+#grid{grid-template-columns:repeat(4,70px);gap:10px}
+.box{width:70px;height:70px;font-size:28px}
+.logo{width:28px;height:28px}
+}
+
+</style>
+</head>
+<body>
+
+<h1>Billions Human Hunt</h1>
+
+<p>Find all <b>6 Billions Humans</b>. If you open a <b>Robot 🤖</b> you lose!</p>
+
+<div id="gameInfo">
+Score: <span id="score">0</span> | Time: <span id="timer">0</span>s
+</div>
+
+<div id="grid"></div>
+
+<div id="message"></div>
+<button onclick="startGame()">Restart Game</button>
+
+<script>
+let boxes=[]
+let humansFound=0
+let gameOver=false
+let score=0
+let time=0
+let timerInterval
+
+const billionsLogo='https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/512px-Bitcoin.svg.png'
+
+function startGame(){
+
+clearInterval(timerInterval)
+
+humansFound=0
+gameOver=false
+score=0
+time=0
+
+updateScore()
+updateTimer()
+
+timerInterval=setInterval(()=>{
+ time++
+ updateTimer()
+},1000)
+
+const grid=document.getElementById('grid')
+const message=document.getElementById('message')
+
+grid.innerHTML=""
+message.innerText=""
+
+boxes=[...Array(8).fill('human')]
+boxes[0]='robot'
+boxes[1]='robot'
+
+boxes.sort(()=>Math.random()-0.5)
+
+boxes.forEach((type)=>{
+
+const div=document.createElement('div')
+
+div.className='box'
+
+ div.onclick=()=>openBox(div,type)
+
+ grid.appendChild(div)
+
+})
+
+}
+
+function openBox(el,type){
+
+if(gameOver || el.innerHTML!=="") return
+
+if(type==='human'){
+
+el.innerHTML=`<img class="logo" src="${billionsLogo}">`
+
+humansFound++
+score+=10
+updateScore()
+
+if(humansFound===6){
+
+document.getElementById('message').innerText="🎉 You saved all humans! You win!"
+
+clearInterval(timerInterval)
+
+gameOver=true
+
+}
+
+}
+
+if(type==='robot'){
+
+el.innerHTML='🤖'
+
+score-=5
+updateScore()
+
+document.getElementById('message').innerText="💀 Robot found! Game Over!"
+
+clearInterval(timerInterval)
+
+gameOver=true
+
+}
+
+}
+
+function updateScore(){
+ document.getElementById('score').innerText=score
+}
+
+function updateTimer(){
+ document.getElementById('timer').innerText=time
+}
+
+startGame()
+
+</script>
+
+</body>
+</html>
